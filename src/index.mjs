@@ -1,18 +1,6 @@
-import figlet from 'figlet';
-
-figlet('Hello GigaGukBab!!', function (err, data) {
-  if (err) {
-    console.log('Something went wrong...');
-    console.dir(err);
-    return;
-  }
-  console.log(data);
-});
-
-// =================================================================================================
-
 import express from 'express';
-import routes from './routes/index.js';
+import routes from './routes/index.mjs';
+import { printFigletAsync } from './figletPrint.mjs';
 
 const app = express();
 
@@ -22,8 +10,15 @@ app.use(routes);
 
 const port = process.env.PORT || 3100;
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Running on port ${port}`);
+
+  try {
+    const figletTextAsync = await printFigletAsync('Hello GigaGukBab!!');
+    console.log(figletTextAsync);
+  } catch (error) {
+    console.error('Failed to print figlet:', error);
+  }
 });
 
 app.get('/', (request, response) => {
