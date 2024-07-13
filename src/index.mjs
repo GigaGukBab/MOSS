@@ -3,7 +3,8 @@ import routes from './routes/index.mjs';
 import { printFigletAsync } from './figletPrint.mjs';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-import { mockUsers } from './utils/const.mjs';
+import passport from 'passport';
+import './stretegies/local-stretegy.mjs';
 
 const app = express();
 
@@ -18,7 +19,31 @@ app.use(
     cookie: { maxAge: 60000 * 60 },
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(routes);
+
+app.post('/api/auth', passport.authenticate('local'), (request, response) => {
+  response.sendStatus(200);
+});
+
+app.get(`/api/auth/status`, (request, response) => {
+  console.log(`Inside /auth/status endpoint`);
+  console.log(request.user);
+  console.log(request.session);
+  return request.user ? response.send(request.user) : response.sendStatus(401);
+});
+
+app.post('/api/auth/logout', (request, response) => {
+  if (!request.user) return response.sendStatus(401);
+
+  request.logout((err) => {
+    if (err) return response.sendStatus(400);
+    response.sendStatus(200);
+  });
+});
 
 const port = process.env.PORT || 3100;
 
@@ -26,61 +51,42 @@ app.listen(port, async () => {
   console.log(`Running on port ${port}`);
 
   try {
-    const figletTextAsync = await printFigletAsync('Hello GigaGukBab!!');
+    const figletTextAsync = await printFigletAsync('Welcome GigaGukBab!!');
     console.log(figletTextAsync);
   } catch (error) {
     console.error('Failed to print figlet:', error);
   }
 });
 
-app.get('/', (request, response) => {
-  console.log(request.sessionID);
-  request.session.visited = true;
-  response.cookie('hello', 'world', { maxAge: 30000, signed: true });
-  response.status(201).send({ main_msg: "Hello to GigaGukBab's server" });
-});
+// app.get('/', (request, response) => {
+//   console.log(request.sessionID);
+//   request.session.visited = true;
+//   response.cookie('hello', 'world', { maxAge: 30000, signed: true });
+//   response.status(201).send({ main_msg: "Hello to GigaGukBab's server" });
+// });
 
-app.post('/api/auth', (request, response) => {
-  const {
-    body: { username, password },
-  } = request;
-  // TODO: add validation logic for username and password
-  const findUser = mockUsers.find((user) => user.username === username);
-  if (!findUser || findUser.password !== password)
-    return response.sendStatus(401).send({ message: 'BAD CREDENTIALS' });
+// app.post('/api/auth', (request, response) => {
+//   const {
+//     body: { username, password },
+//   } = request;
+//   // TODO: add validation logic for username and password
+//   const findUser = mockUsers.find((user) => user.username === username);
+//   if (!findUser || findUser.password !== password)
+//     return response.sendStatus(401).send({ message: 'BAD CREDENTIALS' });
 
-  request.session.user = findUser;
-  return response.status(200).send(findUser);
-});
+//   request.session.user = findUser;
+//   return response.status(200).send(findUser);
+// });
 
-app.get('/api/auth/status', (request, response) => {
-  request.sessionStore.get(request.sessionID, (error, sessionData) => {
-    if (error) {
-      console.log(error);
-      throw error;
-    }
-    console.log(sessionData);
-  });
-  return request.session.user
-    ? response.status(200).send(request.session.user)
-    : response.sendStatus(401).send({ message: 'UNAUTHORIZED' });
-});
-
-app.post('/api/cart', (request, response) => {
-  if (!request.session.user) return response.sendStatus(401);
-  const { body: item } = request;
-  // TODO: add validation logic for item
-
-  const { cart } = request.session;
-  if (cart) {
-    cart.push(item);
-  } else {
-    request.session.cart = [item];
-  }
-  return response.status(201).send(item);
-});
-
-app.get('/api/cart', (request, response) => {
-  if (!request.session.user) return response.sendStatus(401);
-  return response.send(request.session.cart ?? []);
-});
+// app.get('/api/auth/status', (request, response) => {
+//   request.sessionStore.get(request.sessionID, (error, sessionData) => {
+//     if (error) {
+//       console.log(error);
+//       throw error;
+//     }
+//     console.log(sessionData);
+//   });
+//   return request.session.user
+//     ? response.status(200).send(request.session.user)
+//     : response.sendStatus(401).send({ message: 'UNAUTHORIZED' });
+// });
