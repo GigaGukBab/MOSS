@@ -22,5 +22,6 @@ app.listen(port, async () => {
 });
 
 app.get('/', (request, response) => {
+  response.cookie('hello', 'world', { maxAge: 99999999 });
   response.status(201).send({ main_msg: "Hello to GigaGukBab's server" });
 });
