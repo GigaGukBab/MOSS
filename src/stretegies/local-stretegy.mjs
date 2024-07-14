@@ -5,10 +5,13 @@ import { User } from '../mongoose/schemas/user.mjs';
 import { comparePassword } from '../utils/helpers.mjs';
 
 passport.serializeUser((user, done) => {
+  console.log(`Inside Serialze User Callback.`);
+  console.log(user);
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
+  console.log(`Inside Deserialize User Callback`);
   try {
     const findUser = await User.findById(id);
     if (!findUser) throw new Error('User not found');

@@ -21,6 +21,7 @@ router.get(
         console.log(error);
         throw error;
       }
+      console.log('Inside Session Store Get');
       console.log(sessionData);
     });
     const result = validationResult(request);
