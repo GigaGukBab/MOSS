@@ -1,6 +1,5 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { mockUsers } from '../utils/const.mjs';
 import { User } from '../mongoose/schemas/user.mjs';
 import { comparePassword } from '../utils/helpers.mjs';
 

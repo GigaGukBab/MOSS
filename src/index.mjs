@@ -6,7 +6,8 @@ import session from 'express-session';
 import passport from 'passport';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
-import './stretegies/local-stretegy.mjs';
+// import './stretegies/local-stretegy.mjs';
+import './stretegies/auth0-stretegy.mjs';
 
 const app = express();
 
@@ -55,6 +56,17 @@ app.post('/api/auth/logout', (request, response) => {
     response.sendStatus(200);
   });
 });
+
+app.get('/api/auth/auth0', passport.authenticate('auth0'));
+app.get(
+  '/api/auth/auth0/redirect',
+  passport.authenticate('auth0'),
+  (request, response) => {
+    console.log(request.session);
+    console.log(request.user);
+    response.sendStatus(200);
+  }
+);
 
 const port = process.env.PORT || 3100;
 
