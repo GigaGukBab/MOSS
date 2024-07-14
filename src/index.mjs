@@ -4,9 +4,15 @@ import { printFigletAsync } from './figletPrint.mjs';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
+import mongoose from 'mongoose';
 import './stretegies/local-stretegy.mjs';
 
 const app = express();
+
+mongoose
+  .connect('mongodb://localhost/gigagukbab')
+  .then(() => console.log('Connected to Database'))
+  .catch((error) => console.error(error));
 
 // JSON 본문을 파싱하는 미들웨어
 app.use(express.json());
