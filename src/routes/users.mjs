@@ -7,6 +7,7 @@ import { createUserValidationSchema } from '../utils/validationSchema.mjs';
 import { matchedData } from 'express-validator';
 import { resolveIndexByUesrById } from '../utils/middlewares.mjs';
 import { User } from '../mongoose/schemas/user.mjs';
+import { hashPassword } from '../utils/helpers.mjs';
 
 const router = Router();
 
@@ -45,8 +46,10 @@ router.post(
     if (!result.isEmpty()) return response.status(400).send(result.array());
 
     const data = matchedData(request);
-
     console.log('This is data from POST /api/users:');
+    console.log(data);
+    data.password = hashPassword(data.password);
+    console.log('This is data after from POST /api/users:');
     console.log(data);
 
     const newUser = new User(data);
