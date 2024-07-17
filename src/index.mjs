@@ -1,72 +1,13 @@
-import express from 'express';
-import routes from './routes/index.mjs';
 import { printFigletAsync } from './figletPrint.mjs';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import passport from 'passport';
 import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
-// import './stretegies/local-stretegy.mjs';
-import './stretegies/auth0-stretegy.mjs';
-
-const app = express();
+import { createApp } from './createApp.mjs';
 
 mongoose
   .connect('mongodb://localhost/gigagukbab')
   .then(() => console.log('Connected to Database'))
   .catch((error) => console.error(error));
 
-// JSON 본문을 파싱하는 미들웨어
-app.use(express.json());
-app.use(cookieParser('helloWorld'));
-app.use(
-  session({
-    secret: 'your_secret_key',
-    saveUninitialized: false,
-    resave: false,
-    cookie: { maxAge: 60000 * 60 },
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(),
-    }),
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(routes);
-
-app.post('/api/auth', passport.authenticate('local'), (request, response) => {
-  response.sendStatus(200);
-});
-
-app.get(`/api/auth/status`, (request, response) => {
-  console.log(`Inside /auth/status endpoint`);
-  console.log(request.user);
-  console.log(request.session);
-  console.log(request.sessionID);
-  return request.user ? response.send(request.user) : response.sendStatus(401);
-});
-
-app.post('/api/auth/logout', (request, response) => {
-  if (!request.user) return response.sendStatus(401);
-
-  request.logout((err) => {
-    if (err) return response.sendStatus(400);
-    response.sendStatus(200);
-  });
-});
-
-app.get('/api/auth/auth0', passport.authenticate('auth0'));
-app.get(
-  '/api/auth/auth0/redirect',
-  passport.authenticate('auth0'),
-  (request, response) => {
-    console.log(request.session);
-    console.log(request.user);
-    response.sendStatus(200);
-  }
-);
+const app = createApp();
 
 const port = process.env.PORT || 3100;
 
