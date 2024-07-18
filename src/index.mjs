@@ -1,6 +1,10 @@
 import { printFigletAsync } from './figletPrint.mjs';
 import mongoose from 'mongoose';
 import { createApp } from './createApp.mjs';
+import cors from 'cors';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 mongoose
   .connect('mongodb://localhost/gigagukbab')
@@ -8,6 +12,10 @@ mongoose
   .catch((error) => console.error(error));
 
 const app = createApp();
+app.use(cors());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 3100;
 
@@ -22,35 +30,17 @@ app.listen(port, async () => {
   }
 });
 
-// app.get('/', (request, response) => {
-//   console.log(request.sessionID);
-//   request.session.visited = true;
-//   response.cookie('hello', 'world', { maxAge: 30000, signed: true });
-//   response.status(201).send({ main_msg: "Hello to GigaGukBab's server" });
-// });
+app.use(express.static(path.join(__dirname, '../../moss-front/build')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../moss-front/build/index.html'));
+});
+console.log('Static files path:', path.join(__dirname, '../moss-front/build'));
+console.log(
+  'Index.html path:',
+  path.join(__dirname, '../moss-front/build/index.html')
+);
 
-// app.post('/api/auth', (request, response) => {
-//   const {
-//     body: { username, password },
-//   } = request;
-//   // TODO: add validation logic for username and password
-//   const findUser = mockUsers.find((user) => user.username === username);
-//   if (!findUser || findUser.password !== password)
-//     return response.sendStatus(401).send({ message: 'BAD CREDENTIALS' });
-
-//   request.session.user = findUser;
-//   return response.status(200).send(findUser);
-// });
-
-// app.get('/api/auth/status', (request, response) => {
-//   request.sessionStore.get(request.sessionID, (error, sessionData) => {
-//     if (error) {
-//       console.log(error);
-//       throw error;
-//     }
-//     console.log(sessionData);
-//   });
-//   return request.session.user
-//     ? response.status(200).send(request.session.user)
-//     : response.sendStatus(401).send({ message: 'UNAUTHORIZED' });
-// });
+// 모든 요청에 대해 index.html 제공
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../moss-front/build/index.html'));
+});

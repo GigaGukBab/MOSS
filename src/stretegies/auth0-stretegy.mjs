@@ -6,13 +6,10 @@ import { Auth0User } from '../mongoose/schemas/auth0-users.mjs';
 config();
 
 passport.serializeUser((user, done) => {
-  console.log(`Inside Serialze User Callback.`);
-  console.log(user);
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  console.log(`Inside Deserialize User Callback`);
   try {
     const findUser = await Auth0User.findById(id);
     if (!findUser) throw new Error('User not found');

@@ -1,12 +1,13 @@
 import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import session from 'express-session';
 import passport from 'passport';
 import routes from './routes/index.mjs';
 import express from 'express';
 import mongoose from 'mongoose';
-import './stretegies/local-stretegy.mjs';
-// import './stretegies/auth0-stretegy.mjs';
+// import './stretegies/local-stretegy.mjs';
+import './stretegies/auth0-stretegy.mjs';
 
 export function createApp() {
   const app = express();
@@ -30,10 +31,6 @@ export function createApp() {
 
   app.use(routes);
 
-  app.post('/api/auth', passport.authenticate('local'), (request, response) => {
-    response.sendStatus(200);
-  });
-
   app.get(`/api/auth/status`, (request, response) => {
     return request.user
       ? response.send(request.user)
@@ -50,13 +47,14 @@ export function createApp() {
   });
 
   app.get('/api/auth/auth0', passport.authenticate('auth0'));
+
   app.get(
     '/api/auth/auth0/redirect',
     passport.authenticate('auth0'),
     (request, response) => {
       console.log(request.session);
       console.log(request.user);
-      response.sendStatus(200);
+      response.redirect('/');
     }
   );
 
