@@ -3,6 +3,8 @@ node_modules/
 
 # 환경 설정 파일
 .env
+.env.dev
+.env.prod
 
 # 로그 파일
 logs

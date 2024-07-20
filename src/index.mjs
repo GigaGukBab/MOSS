@@ -1,20 +1,37 @@
-import { printFigletAsync } from './figletPrint.mjs';
 import mongoose from 'mongoose';
 import { createApp } from './createApp.mjs';
 import cors from 'cors';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
-const isProduction = process.env.NODE_ENV === 'production';
-console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
-const dbUri = isProduction
-  ? process.env.MONGODB_ATLAS_URI
-  : 'mongodb://localhost/gigagukbab';
+const env = process.env.NODE_ENV || 'development';
+let envFile = '';
+
+if (env === 'development') {
+  envFile = '.env.dev';
+} else if (env === 'production') {
+  envFile = '.env.prod';
+}
+
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+
+const mongoDBep = process.env.MONGODB_ENDPOINT || '';
+
+if (!mongoDBep) {
+  console.error('MONGODB_ENDPOINT is not defined');
+}
 
 mongoose
-  .connect(dbUri)
-  .then(() => console.log('Connected to Database'))
+  .connect(mongoDBep)
+  .then(() => {
+    if (mongoDBep.includes('localhost')) {
+      console.log('Connected to MongoDB on development');
+    } else if (mongoDBep.includes('mongodb+srv')) {
+      console.log('Connected to MongoDB on production');
+    }
+  })
   .catch((error) => console.error(error));
 
 const app = createApp();

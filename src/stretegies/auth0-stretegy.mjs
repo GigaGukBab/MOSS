@@ -1,9 +1,21 @@
-import { config } from 'dotenv';
 import passport from 'passport';
 import { Strategy as Auth0Strategy } from 'passport-auth0';
 import { Auth0User } from '../mongoose/schemas/auth0-users.mjs';
+import path from 'path';
+import { config } from 'dotenv';
 
-config();
+// NODE_ENV에 따라 환경 파일 경로 설정
+const env = process.env.NODE_ENV || 'development';
+let envFile = '';
+
+if (env === 'development') {
+  envFile = '.env.dev';
+} else if (env === 'production') {
+  envFile = '.env.prod';
+}
+
+// 환경 변수 파일 로드
+config({ path: path.resolve(process.cwd(), envFile) });
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
