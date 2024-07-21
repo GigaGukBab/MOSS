@@ -24,7 +24,7 @@ router.get(
   (request, response) => {
     console.log(request.session);
     console.log(request.user);
-    response.redirect('/');
+    response.redirect(`${process.env.CLIENT_URL}`);
   }
 );
 

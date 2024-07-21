@@ -35,9 +35,7 @@ mongoose
   .catch((error) => console.error(error));
 
 const app = createApp();
-export default async (req, res) => {
-  await app(req, res);
-};
+
 app.use(cors());
 
 const __filename = fileURLToPath(import.meta.url);
