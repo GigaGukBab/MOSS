@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { createApp } from './createApp.mjs';
-import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
 
@@ -33,15 +32,6 @@ mongoose
   .catch((error) => console.error(error));
 
 const app = createApp();
-
-// app.use(cors());
-
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  })
-);
 
 const port = process.env.PORT || 3100;
 

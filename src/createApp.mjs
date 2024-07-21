@@ -6,9 +6,17 @@ import routes from './routes/index.mjs';
 import express from 'express';
 import mongoose from 'mongoose';
 import './stretegies/auth0-stretegy.mjs';
+import cors from 'cors';
 
 export function createApp() {
   const app = express();
+
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+      credentials: true,
+    })
+  );
 
   app.use(express.json()); // JSON 본문을 파싱하는 미들웨어
   app.use(cookieParser('helloWorld'));
