@@ -53,6 +53,7 @@ app.listen(port, () => {
 
 app.get('/', (req, res) => {
   console.log('Hello from moss!!!');
+  return res.send('Hello from moss!!!');
   // res.sendFile(path.join(__dirname, '../moss-front/build/index.html'));
 });
 
