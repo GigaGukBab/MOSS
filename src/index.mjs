@@ -1,9 +1,7 @@
 import mongoose from 'mongoose';
 import { createApp } from './createApp.mjs';
 import cors from 'cors';
-import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
 const env = process.env.NODE_ENV || 'development';
@@ -36,10 +34,13 @@ mongoose
 
 const app = createApp();
 
-app.use(cors());
+// app.use(cors());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use(
+  cors({
+    origin: 'https://web-moss-front-lyu6qvc4ff667282.sel4.cloudtype.app',
+  })
+);
 
 const port = process.env.PORT || 3100;
 
@@ -47,15 +48,7 @@ app.listen(port, () => {
   console.log(`Running on port ${port}`);
 });
 
-// app.use(express.static(path.join(__dirname, '../../moss-front/build')));
-
 app.get('/', (req, res) => {
   console.log('Hello from moss!!!');
   return res.send('Hello from moss!!!');
-  // res.sendFile(path.join(__dirname, '../moss-front/build/index.html'));
 });
-
-// // 모든 요청에 대해 index.html 제공
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../../moss-front/build/index.html'));
-// });
