@@ -8,11 +8,19 @@ router.get(`/api/auth/status`, (request, response) => {
 });
 
 router.post('/api/auth/logout', (request, response) => {
-  if (!request.user) return response.sendStatus(401);
-
   request.logout((err) => {
-    if (err) return response.sendStatus(400);
-    response.sendStatus(200);
+    if (err) {
+      console.error('Logout error:', err);
+      return response.sendStatus(500);
+    }
+    request.session.destroy((err) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+        return response.sendStatus(500);
+      }
+      response.clearCookie('connect.sid'); // 세션 쿠키 제거
+      return response.sendStatus(200);
+    });
   });
 });
 
