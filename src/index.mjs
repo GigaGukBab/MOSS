@@ -49,13 +49,14 @@ app.listen(port, () => {
   console.log(`Running on port ${port}`);
 });
 
-app.use(express.static(path.join(__dirname, '../../moss-front/build')));
+// app.use(express.static(path.join(__dirname, '../../moss-front/build')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../moss-front/build/index.html'));
+  console.log('Hello from moss!!!');
+  // res.sendFile(path.join(__dirname, '../moss-front/build/index.html'));
 });
 
-// 모든 요청에 대해 index.html 제공
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../moss-front/build/index.html'));
-});
+// // 모든 요청에 대해 index.html 제공
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../../moss-front/build/index.html'));
+// });
