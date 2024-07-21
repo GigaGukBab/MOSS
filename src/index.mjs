@@ -38,7 +38,7 @@ const app = createApp();
 
 app.use(
   cors({
-    origin: 'https://web-moss-front-lyu6qvc4ff667282.sel4.cloudtype.app',
+    origin: process.env.CLIENT_URL,
   })
 );
 
