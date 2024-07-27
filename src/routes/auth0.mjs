@@ -26,14 +26,26 @@ router.post('/api/auth/logout', (request, response) => {
 
 router.get('/api/auth/auth0', passport.authenticate('auth0'));
 
-router.get(
-  '/api/auth/auth0/redirect',
-  passport.authenticate('auth0'),
-  (request, response) => {
-    console.log(request.session);
-    console.log(request.user);
-    response.redirect(`${process.env.CLIENT_URL}`);
-  }
-);
+router.get('/api/auth/auth0/redirect', (req, res, next) => {
+  passport.authenticate('auth0', (err, user, info) => {
+    if (err) {
+      console.error('Auth0 authentication error:', err);
+      return res.status(500).json({ error: 'Authentication failed' });
+    }
+    if (!user) {
+      console.log('User not authenticated:', info);
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('Login error:', loginErr);
+        return res.status(500).json({ error: 'Login failed' });
+      }
+      console.log('User authenticated:', req.user);
+      console.log('Session:', req.session);
+      res.redirect(`${process.env.CLIENT_URL}`);
+    });
+  })(req, res, next);
+});
 
 export default router;
