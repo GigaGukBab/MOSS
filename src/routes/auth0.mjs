@@ -27,14 +27,17 @@ router.post('/api/auth/logout', (request, response) => {
 router.get('/api/auth/auth0', passport.authenticate('auth0'));
 
 router.get('/api/auth/auth0/redirect', (req, res, next) => {
+  console.log('Received callback with query:', req.query);
   passport.authenticate('auth0', (err, user, info) => {
     if (err) {
       console.error('Auth0 authentication error:', err);
-      return res.status(500).json({ error: 'Authentication failed' });
+      return res
+        .status(500)
+        .json({ error: 'Authentication failed', details: err.message });
     }
     if (!user) {
-      console.log('User not authenticated:', info);
-      return res.status(401).json({ error: 'Unauthorized' });
+      console.log('User not authenticated. Info:', info);
+      return res.status(401).json({ error: 'Unauthorized', details: info });
     }
     req.logIn(user, (loginErr) => {
       if (loginErr) {
