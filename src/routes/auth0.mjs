@@ -42,9 +42,11 @@ router.get('/api/auth/auth0/redirect', (req, res, next) => {
     req.logIn(user, (loginErr) => {
       if (loginErr) {
         console.error('Login error:', loginErr);
-        return res.status(500).json({ error: 'Login failed' });
+        return res
+          .status(500)
+          .json({ error: 'Login failed', details: loginErr.message });
       }
-      console.log('User authenticated:', req.user);
+      console.log('User authenticated:', user);
       console.log('Session:', req.session);
       res.redirect(`${process.env.CLIENT_URL}`);
     });
